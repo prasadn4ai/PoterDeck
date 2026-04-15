@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Home, Settings } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home, Settings, Play, Monitor } from 'lucide-react';
 import { useViewerStore } from '../../store/viewerStore';
 import { useDeckStore } from '../../store/deckStore';
 import { useUiStore } from '../../store/uiStore';
@@ -18,6 +18,7 @@ export function ViewerPage() {
   const modelQualityTier = useDeckStore((s) => s.modelQualityTier);
   const generationTimeMs = useDeckStore((s) => s.generationTimeMs);
   const setAppPhase = useUiStore((s) => s.setAppPhase);
+  const setPresentationMode = useUiStore((s) => s.setPresentationMode);
 
   const activeSlide = slides[activeSlideIndex];
   const canvasContainerRef = useRef(null);
@@ -52,6 +53,7 @@ export function ViewerPage() {
     const handler = (e) => {
       if (e.key === 'ArrowRight') goNext();
       if (e.key === 'ArrowLeft') goPrev();
+      if (e.key === 'F5') { e.preventDefault(); setPresentationMode(true); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -93,6 +95,9 @@ export function ViewerPage() {
           {generationTimeMs && (
             <Badge color="default">Generated in {(generationTimeMs / 1000).toFixed(1)}s</Badge>
           )}
+          <Button size="sm" variant="secondary" onClick={() => setPresentationMode(true)} title="Present fullscreen (F5)">
+            <Play size={14} /> Present
+          </Button>
           <Button size="sm" onClick={() => setAppPhase('export')}>Export</Button>
           <button onClick={() => setAppPhase('settings')} aria-label="Settings"
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '4px' }}>
