@@ -1,0 +1,289 @@
+{
+  "slides": [
+    {
+      "id": "slide1",
+      "type": "title",
+      "label": "cover",
+      "title": "Miracle Software Systems Portfolio",
+      "subtitle": "Innovative IT Solutions for Over 30 Years",
+      "body": "",
+      "bullets": [],
+      "speakerNotes": "Welcome to our portfolio presentation.",
+      "confidenceScore": 0,
+      "isApproved": false,
+      "isManuallyEdited": false
+    },
+    {
+      "id": "slide2",
+      "type": "content",
+      "label": "about-miracle",
+      "title": "About Miracle",
+      "subtitle": "",
+      "body": "Miracle Software Systems has been a pioneer in IT services, consistently delivering cutting-edge solutions for over three decades. Our expertise spans various industries, ensuring tailored solutions to meet diverse client needs.",
+      "bullets": [],
+      "speakerNotes": "Introduce the company and its history.",
+      "confidenceScore": 0,
+      "isApproved": false,
+      "isManuallyEdited": false
+    },
+    {
+      "id": "slide3",
+      "type": "highlight-list",
+      "label": "why-miracle",
+      "title": "Why Miracle",
+      "subtitle": "",
+      "items": [
+        {
+          "icon": "Star",
+          "title": "Customer Retention",
+          "body": "20-30 year relationships with Fortune 100 clients."
+        },
+        {
+          "icon": "TrendingUp",
+          "title": "Industry Expertise",
+          "body": "Deep knowledge in Manufacturing, Retail, and Logistics."
+        },
+        {
+          "icon": "Shield",
+          "title": "Implementation Excellence",
+          "body": "Seamless migrations and modernization with zero disruption."
+        }
+      ],
+      "speakerNotes": "Highlight key strengths and differentiators.",
+      "confidenceScore": 0,
+      "isApproved": false,
+      "isManuallyEdited": false
+    },
+    {
+      "id": "slide4",
+      "type": "section-overview",
+      "label": "our-capabilities",
+      "title": "Our Capabilities",
+      "subtitle": "",
+      "body": "Explore our comprehensive range of IT services designed to drive success in a rapidly evolving digital landscape.",
+      "bullets": [
+        "End-to-end IT solutions",
+        "Infrastructure modernization",
+        "Custom software development"
+      ],
+      "speakerNotes": "Provide an overview of services and capabilities.",
+      "confidenceScore": 0,
+      "isApproved": false,
+      "isManuallyEdited": false
+    },
+    {
+      "id": "slide5",
+      "type": "dashboard",
+      "label": "impact-numbers",
+      "title": "Impact Numbers",
+      "subtitle": "",
+      "metrics": [
+        {
+          "label": "Annual Revenue",
+          "value": "$1.2B",
+          "change": "+10%",
+          "trend": "up"
+        },
+        {
+          "label": "Client Retention Rate",
+          "value": "95%",
+          "change": "+5%",
+          "trend": "up"
+        },
+        {
+          "label": "Projects Completed",
+          "value": "500+",
+          "change": "+20%",
+          "trend": "up"
+        },
+        {
+          "label": "Global Offices",
+          "value": "15",
+          "change": "+1",
+          "trend": "up"
+        }
+      ],
+      "speakerNotes": "Showcase key performance metrics.",
+      "confidenceScore": 0,
+      "isApproved": false,
+      "isManuallyEdited": false
+    },
+    {
+      "id": "slide6",
+      "type": "content",
+      "label": "industry-expertise",
+      "title": "Industry Expertise",
+      "subtitle": "",
+      "body": "Our vast experience in key industries such as Manufacturing, Retail, and Logistics ensures that we deliver solutions that are both innovative and practical.",
+      "bullets": [],
+      "infographic": "process-flow",
+      "infographicData": {
+        "steps": [
+          "Manufacturing Solutions",
+          "Retail Innovations",
+          "Logistics Optimization"
+        ]
+      },
+      "speakerNotes": "Discuss industry-specific expertise.",
+      "confidenceScore": 0,
+      "isApproved": false,
+      "isManuallyEdited": false
+    },
+    {
+      "id": "slide7",
+      "type": "content",
+      "label": "implementation-excellence",
+      "title": "Implementation Excellence",
+      "subtitle": "",
+      "body": "Our end-to-end implementation services are designed to ensure seamless transitions and minimal disruption. We pride ourselves on our ability to modernize infrastructure efficiently.",
+      "bullets": [],
+      "infographic": "roadmap-timeline",
+      "infographicData": {
+        "milestones": [
+          "Project Initiation",
+          "System Design",
+          "Implementation Phase",
+          "Go-Live"
+        ]
+      },
+      "speakerNotes": "Outline the implementation process.",
+      "confidenceScore": 0,
+      "isApproved": false,
+      "isManuallyEdited": false
+    },
+    {
+      "id": "slide8",
+      "type": "highlight-list",
+      "label": "innovation-training",
+      "title": "Innovation & Training",
+      "subtitle": "",
+      "items": [
+        {
+          "icon": "Award",
+          "title": "Continuous Innovation",
+          "body": "Investing in the latest technologies and methodologies."
+        },
+        {
+          "icon": "Users",
+          "title": "Comprehensive Training",
+          "body": "Empowering teams with the skills needed for success."
+        },
+        {
+          "icon": "Globe",
+          "title": "Global Reach",
+          "body": "Solutions that scale globally."
+        }
+      ],
+      "speakerNotes": "Emphasize innovation and training initiatives.",
+      "confidenceScore": 0,
+      "isApproved": false,
+      "isManuallyEdited": false
+    },
+    {
+      "id": "slide9",
+      "type": "content",
+      "label": "support-reliability",
+      "title": "Support & Reliability",
+      "subtitle": "",
+      "body": "We offer 24/7 support and reliable services to ensure our clients achieve their goals without any interruptions.",
+      "bullets": [],
+      "infographic": "kpi-scorecard",
+      "infographicData": {
+        "KPIs": [
+          {
+            "name": "Uptime",
+            "value": "99.99%"
+          },
+          {
+            "name": "Response Time",
+            "value": "5 min"
+          }
+        ]
+      },
+      "speakerNotes": "Discuss support services and reliability.",
+      "confidenceScore": 0,
+      "isApproved": false,
+      "isManuallyEdited": false
+    },
+    {
+      "id": "slide10",
+      "type": "table",
+      "label": "technology-partnerships",
+      "title": "Technology Partnerships",
+      "subtitle": "",
+      "headers": [
+        "Partner",
+        "Industry",
+        "Collaboration"
+      ],
+      "rows": [
+        [
+          "Microsoft",
+          "Cloud",
+          "Azure Services"
+        ],
+        [
+          "IBM",
+          "AI",
+          "Watson Integration"
+        ],
+        [
+          "SAP",
+          "ERP",
+          "Business Solutions"
+        ]
+      ],
+      "speakerNotes": "Highlight key technology partnerships.",
+      "confidenceScore": 0,
+      "isApproved": false,
+      "isManuallyEdited": false
+    },
+    {
+      "id": "slide11",
+      "type": "highlight-list",
+      "label": "customer-success",
+      "title": "Customer Success",
+      "subtitle": "",
+      "items": [
+        {
+          "icon": "Heart",
+          "title": "Long-Term Partnerships",
+          "body": "Building trust with long-standing clients."
+        },
+        {
+          "icon": "CheckCircle",
+          "title": "Achieving Business Goals",
+          "body": "Helping clients meet and exceed their objectives."
+        },
+        {
+          "icon": "Target",
+          "title": "Success Stories",
+          "body": "Documented success across industries."
+        }
+      ],
+      "speakerNotes": "Discuss customer success stories and achievements.",
+      "confidenceScore": 0,
+      "isApproved": false,
+      "isManuallyEdited": false
+    },
+    {
+      "id": "slide12",
+      "type": "thank-you",
+      "label": "partner-with-us",
+      "title": "Partner With Us",
+      "subtitle": "Let's Achieve Greatness Together",
+      "body": "",
+      "bullets": [],
+      "speakerNotes": "Conclude with a call to action to partner with Miracle Software Systems.",
+      "confidenceScore": 0,
+      "isApproved": false,
+      "isManuallyEdited": false
+    }
+  ],
+  "model": "gpt4o",
+  "slideCount": 12,
+  "generationTimeMs": 18662,
+  "requestId": "49600e03-b745-4ebf-a934-163eb7385efc",
+  "sessionId": "2bda7486-a676-46bc-9df4-868ab43f2d4c",
+  "model_tier": "fallback"
+}

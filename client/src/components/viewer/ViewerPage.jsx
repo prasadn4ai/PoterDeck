@@ -124,7 +124,7 @@ export function ViewerPage() {
             }}
           >
             {activeSlide && (
-              <SlideRenderer slide={activeSlide} style={selectedStyle} colorTheme={selectedColorTheme} />
+              <SlideRenderer key={activeSlide.id || activeSlideIndex} slide={activeSlide} style={selectedStyle} colorTheme={selectedColorTheme} />
             )}
           </div>
 
