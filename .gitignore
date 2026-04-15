@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+client/dist/
+
+# Environment (contains secrets)
+.env
+.env.local
+.env.production
+
+# Vercel
+.vercel/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Extracted text files (temp, not source)
+*.txt
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code
+.claude/

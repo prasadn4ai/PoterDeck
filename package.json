@@ -1,0 +1,29 @@
+{
+  "name": "poterdeck-beta",
+  "version": "1.0.0-beta",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:api\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:api": "node dev-server.js",
+    "build": "cd client && npm run build",
+    "start": "vercel dev",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "fast-check": "^4.0.0",
+    "vitest": "^3.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.103.0",
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "pptxgenjs": "^4.0.1",
+    "uuid": "^13.0.0"
+  }
+}
