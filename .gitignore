@@ -29,3 +29,6 @@ Thumbs.db
 
 # Claude Code
 .claude/
+
+# Electron build output
+release/

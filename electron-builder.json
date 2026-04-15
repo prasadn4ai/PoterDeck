@@ -1,0 +1,83 @@
+{
+  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+  "appId": "com.poterdeck.beta",
+  "productName": "PoterDeck",
+  "directories": {
+    "output": "release"
+  },
+  "files": [
+    "electron/**/*",
+    "!electron/icons/*.psd"
+  ],
+  "extraResources": [
+    {
+      "from": "client/dist",
+      "to": "client/dist"
+    },
+    {
+      "from": "api",
+      "to": "server/api"
+    },
+    {
+      "from": "lib",
+      "to": "server/lib"
+    },
+    {
+      "from": "dev-server.js",
+      "to": "server/dev-server.js"
+    },
+    {
+      "from": "node_modules",
+      "to": "server/node_modules",
+      "filter": [
+        "@supabase/**", "bcryptjs/**", "jsonwebtoken/**", "uuid/**",
+        "pptxgenjs/**", "express/**", "dotenv/**",
+        "body-parser/**", "content-disposition/**", "content-type/**",
+        "cookie/**", "cookie-signature/**", "debug/**", "depd/**",
+        "destroy/**", "ee-first/**", "encodeurl/**", "escape-html/**",
+        "etag/**", "finalhandler/**", "fresh/**", "http-errors/**",
+        "inherits/**", "merge-descriptors/**", "methods/**", "mime/**",
+        "ms/**", "on-finished/**", "parseurl/**", "path-to-regexp/**",
+        "proxy-addr/**", "qs/**", "range-parser/**", "raw-body/**",
+        "safe-buffer/**", "safer-buffer/**", "send/**", "serve-static/**",
+        "setprototypeof/**", "statuses/**", "type-is/**", "unpipe/**",
+        "utils-merge/**", "vary/**", "accepts/**", "bytes/**",
+        "iconv-lite/**", "media-typer/**", "forwarded/**", "ipaddr.js/**",
+        "toidentifier/**", "jszip/**", "node-fetch/**"
+      ]
+    }
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "electron/icons/icon.ico"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "installerIcon": "electron/icons/icon.ico",
+    "uninstallerIcon": "electron/icons/icon.ico",
+    "installerHeaderIcon": "electron/icons/icon.ico"
+  },
+  "mac": {
+    "target": [
+      {
+        "target": "dmg",
+        "arch": ["x64", "arm64"]
+      }
+    ],
+    "icon": "electron/icons/icon.icns",
+    "category": "public.app-category.productivity"
+  },
+  "dmg": {
+    "contents": [
+      { "x": 130, "y": 220 },
+      { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+    ]
+  }
+}

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { BarChart3, TrendingUp, Activity, Briefcase, Rocket, RefreshCw, Layout, Sparkles, ArrowRight, Shield } from 'lucide-react';
+import { BarChart3, TrendingUp, Activity, Briefcase, Rocket, RefreshCw, Layout, Sparkles, ArrowRight, Shield, Settings } from 'lucide-react';
 import { Button } from '../shared/Button';
 import { Badge } from '../shared/Badge';
 import { useUiStore } from '../../store/uiStore';
@@ -68,6 +68,10 @@ export function LandingPage() {
               {user.email}
             </span>
           )}
+          <button onClick={() => setAppPhase('settings')} aria-label="Settings"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '4px' }}>
+            <Settings size={18} />
+          </button>
         </div>
       </header>
 

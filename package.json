@@ -3,6 +3,7 @@
   "version": "1.0.0-beta",
   "private": true,
   "type": "module",
+  "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:client\" \"npm run dev:api\"",
     "dev:client": "cd client && npm run dev",
@@ -10,10 +11,16 @@
     "build": "cd client && npm run build",
     "start": "vercel dev",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "electron:dev": "concurrently \"npm run dev:client\" \"npm run dev:api\" \"npx electron .\"",
+    "electron:build": "npm run build && npx electron-builder --config electron-builder.json",
+    "electron:build:win": "npm run build && npx electron-builder --win --config electron-builder.json",
+    "electron:build:mac": "npm run build && npx electron-builder --mac --config electron-builder.json"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
+    "electron": "^41.2.0",
+    "electron-builder": "^26.8.1",
     "fast-check": "^4.0.0",
     "vitest": "^3.0.0"
   },
@@ -21,6 +28,7 @@
     "@supabase/supabase-js": "^2.103.0",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.2",
+    "electron-store": "^11.0.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "pptxgenjs": "^4.0.1",

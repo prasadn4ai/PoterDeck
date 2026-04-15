@@ -13,6 +13,7 @@ import { AdminDashboard } from './components/admin/AdminDashboard';
 import { PresentationMode } from './components/presentation/PresentationMode';
 import { VoiceButton } from './components/voice/VoiceButton';
 import { VoiceToast } from './components/voice/VoiceToast';
+import { SettingsPage } from './components/settings/SettingsPage';
 import { useUiStore } from './store/uiStore';
 import { useDeckStore } from './store/deckStore';
 import { useViewerStore } from './store/viewerStore';
@@ -43,6 +44,8 @@ function PhaseRouter() {
       return <ExportPage />;
     case 'admin':
       return <AdminDashboard />;
+    case 'settings':
+      return <SettingsPage />;
     default:
       return <LandingPage />;
   }
