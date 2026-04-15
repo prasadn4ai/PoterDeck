@@ -74,54 +74,68 @@ export default function App() {
     }
   }, [setDarkMode]);
 
-  // Restore auth session
+  // Restore auth session (with Electron first-run detection)
   useEffect(() => {
-    const savedToken = localStorage.getItem('poterdeck_token');
-    if (savedToken) {
-      setToken(savedToken);
-      getMe()
-        .then((data) => {
-          setUser(data.user);
-
-          // Check for recoverable session
-          if (hasRecoverableSession()) {
-            const confirmed = window.confirm('Resume your previous deck?');
-            if (confirmed) {
-              const session = loadSession();
-              if (session) {
-                useDeckStore.setState({
-                  selectedDeckType: session.deckType,
-                  selectedStyle: session.style,
-                  selectedColorTheme: session.colorTheme,
-                  userIntent: session.intent,
-                  sessionId: session.sessionId,
-                });
-                useViewerStore.setState({
-                  slides: session.slides || [],
-                  approvedSlides: session.approvedSlides || new Set(),
-                });
-                setAppPhase('viewer');
-                setAuthReady(true);
-                return;
-              }
-            } else {
-              clearSession();
-            }
+    async function init() {
+      // Electron: if not configured, go straight to Settings
+      if (window.electronAPI) {
+        try {
+          const configured = await window.electronAPI.isConfigured();
+          if (!configured) {
+            setAppPhase('settings');
+            setAuthReady(true);
+            return;
           }
+        } catch {
+          // If isConfigured fails, still show settings
+          setAppPhase('settings');
+          setAuthReady(true);
+          return;
+        }
+      }
 
+      // Check for saved auth token
+      const savedToken = localStorage.getItem('poterdeck_token');
+      if (!savedToken) {
+        setAppPhase('auth');
+        setAuthReady(true);
+        return;
+      }
+
+      // Validate token with server
+      setToken(savedToken);
+      try {
+        const data = await getMe();
+        setUser(data.user);
+
+        // Check for recoverable session with actual slides
+        const session = loadSession();
+        if (session?.slides?.length > 0) {
+          useDeckStore.setState({
+            selectedDeckType: session.deckType,
+            selectedStyle: session.style,
+            selectedColorTheme: session.colorTheme,
+            userIntent: session.intent,
+            sessionId: session.sessionId,
+          });
+          useViewerStore.setState({
+            slides: session.slides,
+            approvedSlides: session.approvedSlides || new Set(),
+          });
+          setAppPhase('viewer');
+        } else {
+          clearSession();
           setAppPhase('landing');
-          setAuthReady(true);
-        })
-        .catch(() => {
-          localStorage.removeItem('poterdeck_token');
-          setToken(null);
-          setAppPhase('auth');
-          setAuthReady(true);
-        });
-    } else {
-      setAppPhase('auth');
+        }
+      } catch {
+        // Token invalid or server unreachable
+        localStorage.removeItem('poterdeck_token');
+        setToken(null);
+        setAppPhase('auth');
+      }
       setAuthReady(true);
     }
+    init();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const appPhase = useUiStore((s) => s.appPhase);

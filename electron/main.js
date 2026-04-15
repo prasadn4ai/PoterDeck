@@ -79,9 +79,17 @@ async function startApiServer() {
   apiProcess.stdout.on('data', (data) => console.log('[API]', data.toString().trim()));
   apiProcess.stderr.on('data', (data) => console.error('[API ERR]', data.toString().trim()));
 
-  // Wait for server to be ready
+  // Wait for server to be ready (with timeout)
   return new Promise((resolve) => {
+    let attempts = 0;
+    const maxAttempts = 20; // 10 seconds max
     const check = () => {
+      attempts++;
+      if (attempts > maxAttempts) {
+        console.error('[API] Server failed to start after', maxAttempts, 'attempts');
+        resolve(apiPort); // resolve anyway so app isn't stuck
+        return;
+      }
       fetch(`http://localhost:${apiPort}/api/health`)
         .then((r) => r.json())
         .then(() => resolve(apiPort))
@@ -169,12 +177,21 @@ function createMainWindow() {
     return ['media', 'microphone', 'audioCapture'].includes(permission);
   });
 
-  // Load the app — always via http:// so Web Speech API works
+  // Load the app
   if (isDev) {
     mainWindow.loadURL(`http://localhost:5173`);
+  } else if (apiPort > 0) {
+    // API running: load via http:// (enables voice via Web Speech API)
+    const appUrl = `http://localhost:${apiPort}`;
+    mainWindow.loadURL(appUrl);
+    mainWindow.webContents.on('did-fail-load', () => {
+      console.log('[APP] HTTP load failed, falling back to file://');
+      mainWindow.loadFile(path.join(process.resourcesPath, 'client', 'dist', 'index.html'));
+    });
   } else {
-    // Served by the embedded API server (enables voice, proper CORS, etc.)
-    mainWindow.loadURL(`http://localhost:${apiPort}`);
+    // No API: load directly from file (Settings page will show for first-run setup)
+    console.log('[APP] No API server, loading from file://');
+    mainWindow.loadFile(path.join(process.resourcesPath, 'client', 'dist', 'index.html'));
   }
 
   // Screenshot protection for free tier (OS-level: window appears black in screenshots)
@@ -255,13 +272,20 @@ app.whenReady().then(async () => {
   createSplashWindow();
 
   const isConfigured = !!store.get('supabaseUrl') && !!store.get('supabaseKey') && !!store.get('jwtSecret');
+  let apiStarted = false;
 
   if (isConfigured) {
     try {
       await startApiServer();
+      apiStarted = true;
     } catch (err) {
       console.error('Failed to start API server:', err);
     }
+  }
+
+  // If API didn't start, ensure we fall back to file:// loading
+  if (!apiStarted) {
+    apiPort = 0; // signal to createMainWindow to use file://
   }
 
   createMainWindow();

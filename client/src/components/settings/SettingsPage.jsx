@@ -172,17 +172,29 @@ export function SettingsPage() {
   const handleSaveSupabase = async () => {
     if (!isElectron) return;
     setSaving(true);
-    await window.electronAPI.saveSettings({ supabaseUrl, supabaseKey: supabaseKey || undefined, jwtSecret: jwtSecret || undefined });
-    setRestartNeeded(true);
+    try {
+      await window.electronAPI.saveSettings({
+        supabaseUrl: supabaseUrl || undefined,
+        supabaseKey: supabaseKey || undefined,
+        jwtSecret: jwtSecret || undefined,
+      });
+      setRestartNeeded(true);
+      await loadSettings();
+    } catch (e) { console.error('Save failed:', e); }
     setSaving(false);
-    await loadSettings();
   };
 
   const handleRestartApi = async () => {
     if (!isElectron) return;
     setSaving(true);
-    await window.electronAPI.restartApi();
-    setRestartNeeded(false);
+    try {
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 15000));
+      await Promise.race([window.electronAPI.restartApi(), timeout]);
+      setRestartNeeded(false);
+    } catch (e) {
+      console.error('Restart failed:', e);
+      setRestartNeeded(false); // clear anyway so user isn't stuck
+    }
     setSaving(false);
   };
 
@@ -346,6 +358,21 @@ export function SettingsPage() {
             ))}
           </div>
         </section>
+
+        {/* Save & Continue (Electron first-run) */}
+        {isElectron && (
+          <div style={{ marginTop: 'var(--space-6)', paddingTop: 'var(--space-6)', borderTop: '1px solid var(--color-border)' }}>
+            <Button size="lg" fullWidth onClick={async () => {
+              if (supabaseUrl || supabaseKey || jwtSecret) await handleSaveSupabase();
+              try { await handleRestartApi(); } catch {}
+              // Mark first run complete
+              try { await window.electronAPI.saveSettings({ firstRun: false }); } catch {}
+              setAppPhase('auth');
+            }}>
+              Save & Continue to Login
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
