@@ -19,6 +19,7 @@ import { useDeckStore } from './store/deckStore';
 import { useViewerStore } from './store/viewerStore';
 import { useSessionRestore } from './hooks/useSessionRestore';
 import { useConfidence } from './hooks/useConfidence';
+import { useScreenshotProtection } from './hooks/useScreenshotProtection';
 import { getMe } from './services/apiService';
 import { hasRecoverableSession, loadSession, clearSession } from './services/sessionService';
 
@@ -61,6 +62,7 @@ export default function App() {
   // Hooks
   useSessionRestore();
   useConfidence();
+  useScreenshotProtection();
 
   // Restore dark mode preference
   useEffect(() => {

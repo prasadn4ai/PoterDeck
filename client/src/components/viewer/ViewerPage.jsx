@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Home, Settings } from 'lucide-react';
 import { useViewerStore } from '../../store/viewerStore';
 import { useDeckStore } from '../../store/deckStore';
 import { useUiStore } from '../../store/uiStore';
@@ -20,6 +20,25 @@ export function ViewerPage() {
   const setAppPhase = useUiStore((s) => s.setAppPhase);
 
   const activeSlide = slides[activeSlideIndex];
+  const canvasContainerRef = useRef(null);
+  const [slideScale, setSlideScale] = useState(0.85);
+
+  // Responsive slide scaling — recalculate on resize
+  const updateScale = useCallback(() => {
+    const container = canvasContainerRef.current;
+    if (!container) return;
+    const cw = container.clientWidth - 48; // padding
+    const ch = container.clientHeight - 80; // padding + nav arrows
+    const scaleX = cw / 960;
+    const scaleY = ch / 540;
+    setSlideScale(Math.min(scaleX, scaleY, 1.5)); // cap at 1.5x
+  }, []);
+
+  useEffect(() => {
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, [updateScale]);
 
   const goNext = useCallback(() => {
     if (activeSlideIndex < slides.length - 1) setActiveSlide(activeSlideIndex + 1);
@@ -75,6 +94,10 @@ export function ViewerPage() {
             <Badge color="default">Generated in {(generationTimeMs / 1000).toFixed(1)}s</Badge>
           )}
           <Button size="sm" onClick={() => setAppPhase('export')}>Export</Button>
+          <button onClick={() => setAppPhase('settings')} aria-label="Settings"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: '4px' }}>
+            <Settings size={16} />
+          </button>
         </div>
       </div>
 
@@ -84,22 +107,29 @@ export function ViewerPage() {
         <SlideNavigator />
 
         {/* Slide canvas */}
-        <div style={{
-          flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          padding: 'var(--space-6)', overflow: 'hidden', background: 'var(--color-bg-alt)',
-        }}>
-          <div style={{
-            transform: 'scale(var(--slide-scale, 0.85))',
-            transformOrigin: 'center center',
-            boxShadow: 'var(--shadow-xl)', borderRadius: 'var(--radius-lg)', overflow: 'hidden',
-          }}>
+        <div
+          ref={canvasContainerRef}
+          style={{
+            flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            padding: 'var(--space-4)', overflow: 'hidden', background: 'var(--color-bg-alt)',
+          }}
+        >
+          <div
+            data-slide-canvas="true"
+            style={{
+              transform: `scale(${slideScale})`,
+              transformOrigin: 'center center',
+              boxShadow: 'var(--shadow-xl)', borderRadius: 'var(--radius-lg)', overflow: 'hidden',
+              userSelect: 'none', WebkitUserDrag: 'none',
+            }}
+          >
             {activeSlide && (
               <SlideRenderer slide={activeSlide} style={selectedStyle} colorTheme={selectedColorTheme} />
             )}
           </div>
 
           {/* Nav arrows */}
-          <div style={{ display: 'flex', gap: 'var(--space-4)', marginTop: 'var(--space-4)' }}>
+          <div style={{ display: 'flex', gap: 'var(--space-4)', marginTop: 'var(--space-3)' }}>
             <button onClick={goPrev} disabled={activeSlideIndex === 0}
               style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '8px', cursor: activeSlideIndex === 0 ? 'not-allowed' : 'pointer', opacity: activeSlideIndex === 0 ? 0.3 : 1 }}>
               <ChevronLeft size={20} />

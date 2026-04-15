@@ -3,6 +3,8 @@ import { ArrowLeft, Key, Database, Shield, Cpu, Check, X, Eye, EyeOff, RefreshCw
 import { Button } from '../shared/Button';
 import { Badge } from '../shared/Badge';
 import { useUiStore } from '../../store/uiStore';
+import { useDeckStore } from '../../store/deckStore';
+import { LogoSettings } from '../branding/LogoSettings';
 
 const isElectron = !!window.electronAPI;
 
@@ -277,6 +279,46 @@ export function SettingsPage() {
             </div>
           </section>
         )}
+
+        {/* Company Logo / Branding */}
+        <LogoSettings />
+
+        {/* Subscription Tier */}
+        <section style={{ marginBottom: 'var(--space-8)' }}>
+          <h2 style={{ fontSize: 'var(--font-size-lg)', fontWeight: 700, marginBottom: 'var(--space-4)' }}>Subscription</h2>
+          {(() => {
+            const tier = useDeckStore.getState().userTier;
+            return (
+              <div style={{
+                padding: 'var(--space-5)', background: tier === 'premium' ? '#10B98110' : 'var(--color-bg-alt)',
+                borderRadius: 'var(--radius-lg)', border: `1px solid ${tier === 'premium' ? '#10B98130' : 'var(--color-border)'}`,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-3)' }}>
+                  <Badge color={tier === 'premium' ? 'success' : 'default'}>{tier === 'premium' ? 'Premium' : 'Free'}</Badge>
+                  <span style={{ fontWeight: 600 }}>{tier === 'premium' ? 'All features unlocked' : 'Basic features'}</span>
+                </div>
+                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>
+                  {tier === 'free' ? (
+                    <ul style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <li>PoterDeck watermark on slides</li>
+                      <li>PDF export only (PPTX is premium)</li>
+                      <li>Screenshot protection enabled</li>
+                      <li style={{ color: 'var(--color-primary)', fontWeight: 600, cursor: 'pointer' }}>
+                        Upgrade to Premium for full access
+                      </li>
+                    </ul>
+                  ) : (
+                    <ul style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <li>No watermark on slides</li>
+                      <li>PPTX + PDF + JSON export</li>
+                      <li>No screenshot restrictions</li>
+                    </ul>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+        </section>
 
         {/* Status overview */}
         <section>

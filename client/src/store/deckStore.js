@@ -18,6 +18,12 @@ export const useDeckStore = create((set) => ({
   // Auth state
   token: null,
   user: null,
+  userTier: 'free', // 'free' | 'premium'
+
+  // Branding state
+  logoData: localStorage.getItem('poterdeck_logo') || null,
+  logoPosition: localStorage.getItem('poterdeck_logo_position') || 'bottom-left',
+  logoSize: Number(localStorage.getItem('poterdeck_logo_size')) || 48,
 
   // Actions
   resetDeck: () => set({
@@ -53,5 +59,11 @@ export const useDeckStore = create((set) => ({
   // Auth actions
   setToken: (token) => set({ token }),
   setUser: (user) => set({ user }),
-  logout: () => set({ token: null, user: null }),
+  setUserTier: (tier) => set({ userTier: tier }),
+  logout: () => set({ token: null, user: null, userTier: 'free' }),
+
+  // Branding actions
+  setLogoData: (data) => set({ logoData: data }),
+  setLogoPosition: (pos) => set({ logoPosition: pos }),
+  setLogoSize: (size) => set({ logoSize: size }),
 }));

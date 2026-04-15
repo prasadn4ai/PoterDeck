@@ -8,6 +8,8 @@ import { TableRenderer } from './TableRenderer';
 import { SectionOverviewRenderer } from './SectionOverviewRenderer';
 import { HighlightListRenderer } from './HighlightListRenderer';
 import { ThankYouRenderer } from './ThankYouRenderer';
+import { WatermarkOverlay } from '../components/branding/WatermarkOverlay';
+import { LogoOverlay } from '../components/branding/LogoOverlay';
 
 const RENDERER_MAP = {
   title: TitleRenderer,
@@ -20,7 +22,7 @@ const RENDERER_MAP = {
   'thank-you': ThankYouRenderer,
 };
 
-export function SlideRenderer({ slide, style = 'corporate', colorTheme = 'blue' }) {
+export function SlideRenderer({ slide, style = 'corporate', colorTheme = 'blue', hideOverlays = false }) {
   const Renderer = RENDERER_MAP[slide?.type] || ContentRenderer;
   const typo = getTypography(style);
   const spacing = getSpacing(style);
@@ -34,6 +36,8 @@ export function SlideRenderer({ slide, style = 'corporate', colorTheme = 'blue' 
       color: colors.text,
     }}>
       <Renderer slide={slide} typo={typo} spacing={spacing} colors={colors} layout={layout} />
+      {!hideOverlays && <LogoOverlay />}
+      {!hideOverlays && <WatermarkOverlay />}
     </div>
   );
 }

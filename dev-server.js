@@ -2,25 +2,38 @@
 // Usage: node dev-server.js (runs on port 3000)
 
 import express from 'express';
-import { config } from 'dotenv';
-config();
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Load .env only in dev mode (Electron passes env vars directly)
+if (!process.env.POTERDECK_CLIENT_DIST) {
+  const { config } = await import('dotenv');
+  config();
+}
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json({ limit: '20mb' }));
 
-// CORS for local dev
+// CORS — allow same-origin (Electron) and Vite dev server
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+  const origin = req.headers.origin || '*';
+  res.header('Access-Control-Allow-Origin', origin);
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-BYOK-Gemini, X-BYOK-OpenAI, X-BYOK-Anthropic');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
 
-// Dynamic route loader — maps /api/path to api/path.js
+// Resolve API handler paths relative to this script (works in packaged app too)
+const apiDir = path.join(__dirname, 'api');
+
 async function loadHandler(routePath) {
   try {
-    const mod = await import(`./api/${routePath}.js`);
+    const fullPath = path.join(apiDir, routePath + '.js');
+    const mod = await import('file:///' + fullPath.replace(/\\/g, '/'));
     return mod.default;
   } catch (err) {
     console.error(`Failed to load handler: api/${routePath}.js`, err.message);
@@ -62,6 +75,26 @@ app.get('/api/admin/analytics', async (req, res) => { const h = await loadHandle
 
 // Health
 app.get('/api/health', async (req, res) => { const h = await loadHandler('health'); h?.(req, res); });
+
+// Serve built client static files (Electron production + standalone)
+import fs from 'fs';
+
+const clientDistPath = process.env.POTERDECK_CLIENT_DIST || path.join(__dirname, 'client', 'dist');
+
+if (fs.existsSync(clientDistPath) && fs.existsSync(path.join(clientDistPath, 'index.html'))) {
+  app.use(express.static(clientDistPath));
+  // SPA fallback — serve index.html for non-API routes (Express 5 syntax)
+  app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api') && !req.path.includes('.')) {
+      res.sendFile(path.join(clientDistPath, 'index.html'));
+    } else {
+      next();
+    }
+  });
+  console.log('[API] Serving client from:', clientDistPath);
+} else {
+  console.log('[API] No client dist found at:', clientDistPath, '(browser dev mode — use Vite on :5173)');
+}
 
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {

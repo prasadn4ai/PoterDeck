@@ -5,6 +5,8 @@ import { Badge } from '../shared/Badge';
 import { useUiStore } from '../../store/uiStore';
 import { useDeckStore } from '../../store/deckStore';
 import { recommendDecks, getRecommendedStyle, getRecommendedColor } from '../../engine/intentEngine';
+import { VoiceButton } from '../voice/VoiceButton';
+import { parseIntentCommand } from '../../engine/voiceEngine';
 
 const DECK_TYPES = [
   { id: 'q_report',       label: 'Quarterly Report',      icon: BarChart3,  description: 'Full quarterly business report with financials, KPIs and outlook', slides: 30 },
@@ -111,10 +113,19 @@ export function LandingPage() {
               onChange={(e) => setIntent(e.target.value)}
               placeholder="e.g., Q1 2025 board report for our SaaS company..."
               style={{
-                flex: 1, border: 'none', outline: 'none',
+                flex: 1, border: 'none', outline: 'none', minWidth: 0,
                 padding: '0.75rem 0', fontSize: 'var(--font-size-lg)',
                 background: 'transparent', color: 'var(--color-text)',
               }}
+            />
+            <VoiceButton
+              mode="intent"
+              size={36}
+              onCommand={(transcript) => {
+                const parsed = parseIntentCommand(transcript);
+                if (parsed.intent) setIntent(parsed.intent);
+              }}
+              style={{ margin: '0 4px' }}
             />
           </div>
           {intent.length > 0 && !intentValid && (

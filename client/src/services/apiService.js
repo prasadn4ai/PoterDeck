@@ -1,9 +1,31 @@
 import axios from 'axios';
 
+// In Electron, API runs on a dynamic port; in browser, use Vite proxy
+async function getBaseURL() {
+  if (window.electronAPI) {
+    const port = await window.electronAPI.getApiPort();
+    return `http://localhost:${port}/api`;
+  }
+  return '/api';
+}
+
+let baseURLPromise = null;
+function ensureBaseURL() {
+  if (!baseURLPromise) baseURLPromise = getBaseURL();
+  return baseURLPromise;
+}
+
 const api = axios.create({
   baseURL: '/api',
   headers: { 'Content-Type': 'application/json' },
 });
+
+// Dynamically set baseURL for Electron
+api.interceptors.request.use(async (config) => {
+  const base = await ensureBaseURL();
+  config.baseURL = base;
+  return config;
+}, undefined);
 
 // Attach auth token to every request
 api.interceptors.request.use((config) => {
