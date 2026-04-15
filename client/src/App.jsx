@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ErrorBoundary } from './components/shared/ErrorBoundary';
 import { Toast } from './components/shared/Toast';
+import { LoadingState } from './components/shared/LoadingState';
 import { LoginPage } from './components/auth/LoginPage';
 import { RegisterPage } from './components/auth/RegisterPage';
 import { LandingPage } from './components/landing/LandingPage';
@@ -14,6 +15,7 @@ import { VoiceButton } from './components/voice/VoiceButton';
 import { VoiceToast } from './components/voice/VoiceToast';
 import { useUiStore } from './store/uiStore';
 import { useDeckStore } from './store/deckStore';
+import { useViewerStore } from './store/viewerStore';
 import { useSessionRestore } from './hooks/useSessionRestore';
 import { useConfidence } from './hooks/useConfidence';
 import { getMe } from './services/apiService';
@@ -47,9 +49,9 @@ function PhaseRouter() {
 }
 
 export default function App() {
+  const [authReady, setAuthReady] = useState(false);
   const setAppPhase = useUiStore((s) => s.setAppPhase);
   const setDarkMode = useUiStore((s) => s.setDarkMode);
-  const appPhase = useUiStore((s) => s.appPhase);
   const setToken = useDeckStore((s) => s.setToken);
   const setUser = useDeckStore((s) => s.setUser);
 
@@ -67,7 +69,7 @@ export default function App() {
     }
   }, [setDarkMode]);
 
-  // Restore auth session + check for recoverable deck session
+  // Restore auth session
   useEffect(() => {
     const savedToken = localStorage.getItem('poterdeck_token');
     if (savedToken) {
@@ -89,12 +91,12 @@ export default function App() {
                   userIntent: session.intent,
                   sessionId: session.sessionId,
                 });
-                const { useViewerStore } = require('./store/viewerStore');
                 useViewerStore.setState({
                   slides: session.slides || [],
                   approvedSlides: session.approvedSlides || new Set(),
                 });
                 setAppPhase('viewer');
+                setAuthReady(true);
                 return;
               }
             } else {
@@ -103,18 +105,26 @@ export default function App() {
           }
 
           setAppPhase('landing');
+          setAuthReady(true);
         })
         .catch(() => {
           localStorage.removeItem('poterdeck_token');
           setToken(null);
           setAppPhase('auth');
+          setAuthReady(true);
         });
     } else {
       setAppPhase('auth');
+      setAuthReady(true);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const appPhase = useUiStore((s) => s.appPhase);
   const showVoice = appPhase === 'viewer';
+
+  if (!authReady) {
+    return <LoadingState message="Loading PoterDeck..." />;
+  }
 
   return (
     <ErrorBoundary>
