@@ -29,14 +29,11 @@ export function useSessionRestore() {
       }
     });
 
-    // beforeunload
-    const handleUnload = (e) => {
+    // beforeunload — save session but don't block close
+    const handleUnload = () => {
       const { slides } = useViewerStore.getState();
-      if (slides.length > 0) {
-        save();
-        e.preventDefault();
-        e.returnValue = '';
-      }
+      if (slides.length > 0) save();
+      // Don't call e.preventDefault() — it blocks Electron window close
     };
     window.addEventListener('beforeunload', handleUnload);
 
