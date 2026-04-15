@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Key, Database, Shield, Cpu, Check, X, Eye, EyeOff, RefreshCw, Save } from 'lucide-react';
+import { ArrowLeft, Key, Shield, Cpu, Check, X, Eye, EyeOff, RefreshCw, Save } from 'lucide-react';
 import { Button } from '../shared/Button';
 import { Badge } from '../shared/Badge';
 import { useUiStore } from '../../store/uiStore';
@@ -110,9 +110,6 @@ export function SettingsPage() {
   const setAppPhase = useUiStore((s) => s.setAppPhase);
   const [settings, setSettings] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [supabaseUrl, setSupabaseUrl] = useState('');
-  const [supabaseKey, setSupabaseKey] = useState('');
-  const [jwtSecret, setJwtSecret] = useState('');
   const [restartNeeded, setRestartNeeded] = useState(false);
 
   useEffect(() => {
@@ -167,21 +164,6 @@ export function SettingsPage() {
       if (lsMap[keyName]) localStorage.removeItem(lsMap[keyName]);
     }
     await loadSettings();
-  };
-
-  const handleSaveSupabase = async () => {
-    if (!isElectron) return;
-    setSaving(true);
-    try {
-      await window.electronAPI.saveSettings({
-        supabaseUrl: supabaseUrl || undefined,
-        supabaseKey: supabaseKey || undefined,
-        jwtSecret: jwtSecret || undefined,
-      });
-      setRestartNeeded(true);
-      await loadSettings();
-    } catch (e) { console.error('Save failed:', e); }
-    setSaving(false);
   };
 
   const handleRestartApi = async () => {
@@ -258,40 +240,6 @@ export function SettingsPage() {
           </div>
         </section>
 
-        {/* Supabase (Electron only) */}
-        {isElectron && (
-          <section style={{ marginBottom: 'var(--space-8)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-4)' }}>
-              <Database size={20} style={{ color: 'var(--color-primary)' }} />
-              <h2 style={{ fontSize: 'var(--font-size-lg)', fontWeight: 700 }}>Database (Supabase)</h2>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 'var(--font-size-sm)', fontWeight: 500, marginBottom: '4px' }}>Project URL</label>
-                <input type="url" value={supabaseUrl} onChange={(e) => setSupabaseUrl(e.target.value)}
-                  placeholder="https://your-project.supabase.co"
-                  style={{ width: '100%', padding: '10px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg)', color: 'var(--color-text)', fontSize: 'var(--font-size-sm)' }} />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 'var(--font-size-sm)', fontWeight: 500, marginBottom: '4px' }}>Service Role Key</label>
-                <input type="password" value={supabaseKey} onChange={(e) => setSupabaseKey(e.target.value)}
-                  placeholder={settings.hasSupabase ? '••••••••' : 'Enter service role key'}
-                  style={{ width: '100%', padding: '10px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg)', color: 'var(--color-text)', fontSize: 'var(--font-size-sm)' }} />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 'var(--font-size-sm)', fontWeight: 500, marginBottom: '4px' }}>JWT Secret</label>
-                <input type="password" value={jwtSecret} onChange={(e) => setJwtSecret(e.target.value)}
-                  placeholder={settings.hasJwt ? '••••••••' : 'Min 32 character random string'}
-                  style={{ width: '100%', padding: '10px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'var(--color-bg)', color: 'var(--color-text)', fontSize: 'var(--font-size-sm)' }} />
-              </div>
-              <Button onClick={handleSaveSupabase} disabled={saving}>
-                <Save size={14} /> {saving ? 'Saving...' : 'Save Database Settings'}
-              </Button>
-            </div>
-          </section>
-        )}
-
         {/* Company Logo / Branding */}
         <LogoSettings />
 
@@ -363,7 +311,7 @@ export function SettingsPage() {
         {isElectron && (
           <div style={{ marginTop: 'var(--space-6)', paddingTop: 'var(--space-6)', borderTop: '1px solid var(--color-border)' }}>
             <Button size="lg" fullWidth onClick={async () => {
-              if (supabaseUrl || supabaseKey || jwtSecret) await handleSaveSupabase();
+              // LLM keys are saved individually via KeyInput components
               try { await handleRestartApi(); } catch {}
               // Mark first run complete
               try { await window.electronAPI.saveSettings({ firstRun: false }); } catch {}

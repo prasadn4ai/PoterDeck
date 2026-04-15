@@ -13,12 +13,24 @@ const isDev = !app.isPackaged;
 app.commandLine.appendSwitch('high-dpi-support', '1');
 app.commandLine.appendSwitch('force-device-scale-factor', '1');
 
+// Backend infrastructure — loaded from bundled config (not user-configurable)
+import { readFileSync, existsSync } from 'fs';
+
+let BACKEND_CONFIG = { supabaseUrl: '', supabaseKey: '', jwtSecret: '' };
+const configPaths = [
+  path.join(__dirname, '..', 'backend.config.json'),       // dev
+  path.join(__dirname, 'backend.config.json'),              // dev alt
+  path.join(process.resourcesPath || '', 'backend.config.json'),  // packaged
+];
+for (const p of configPaths) {
+  if (existsSync(p)) {
+    try { BACKEND_CONFIG = JSON.parse(readFileSync(p, 'utf-8')); break; } catch {}
+  }
+}
+
 const store = new Store({
   name: 'poterdeck-config',
   defaults: {
-    supabaseUrl: '',
-    supabaseKey: '',
-    jwtSecret: '',
     googleApiKey: '',
     openaiApiKey: '',
     anthropicApiKey: '',
@@ -56,9 +68,9 @@ async function startApiServer() {
     ...process.env,
     PORT: String(apiPort),
     NODE_ENV: 'production',
-    SUPABASE_URL: store.get('supabaseUrl'),
-    SUPABASE_SERVICE_KEY: store.get('supabaseKey'),
-    JWT_SECRET: store.get('jwtSecret'),
+    SUPABASE_URL: BACKEND_CONFIG.supabaseUrl,
+    SUPABASE_SERVICE_KEY: BACKEND_CONFIG.supabaseKey,
+    JWT_SECRET: BACKEND_CONFIG.jwtSecret,
     GOOGLE_API_KEY: store.get('googleApiKey'),
     OPENAI_API_KEY: store.get('openaiApiKey'),
     ANTHROPIC_API_KEY: store.get('anthropicApiKey'),
@@ -219,17 +231,14 @@ function createMainWindow() {
   });
 }
 
-// IPC Handlers for Settings
+// IPC Handlers for Settings (only LLM keys — Supabase/JWT managed internally)
 ipcMain.handle('settings:get', () => {
   return {
-    supabaseUrl: store.get('supabaseUrl'),
-    supabaseKey: store.get('supabaseKey') ? '••••••••' : '',
-    jwtSecret: store.get('jwtSecret') ? '••••••••' : '',
     googleApiKey: store.get('googleApiKey') ? '••••••••' : '',
     openaiApiKey: store.get('openaiApiKey') ? '••••••••' : '',
     anthropicApiKey: store.get('anthropicApiKey') ? '••••••••' : '',
-    hasSupabase: !!store.get('supabaseUrl') && !!store.get('supabaseKey'),
-    hasJwt: !!store.get('jwtSecret'),
+    hasSupabase: true, // always configured (bundled)
+    hasJwt: true,      // always configured (bundled)
     hasGemini: !!store.get('googleApiKey'),
     hasOpenai: !!store.get('openaiApiKey'),
     hasAnthropic: !!store.get('anthropicApiKey'),
@@ -239,9 +248,6 @@ ipcMain.handle('settings:get', () => {
 });
 
 ipcMain.handle('settings:save', (event, settings) => {
-  if (settings.supabaseUrl !== undefined) store.set('supabaseUrl', settings.supabaseUrl);
-  if (settings.supabaseKey !== undefined && settings.supabaseKey !== '••••••••') store.set('supabaseKey', settings.supabaseKey);
-  if (settings.jwtSecret !== undefined && settings.jwtSecret !== '••••••••') store.set('jwtSecret', settings.jwtSecret);
   if (settings.googleApiKey !== undefined && settings.googleApiKey !== '••••••••') store.set('googleApiKey', settings.googleApiKey);
   if (settings.openaiApiKey !== undefined && settings.openaiApiKey !== '••••••••') store.set('openaiApiKey', settings.openaiApiKey);
   if (settings.anthropicApiKey !== undefined && settings.anthropicApiKey !== '••••••••') store.set('anthropicApiKey', settings.anthropicApiKey);
@@ -263,15 +269,15 @@ ipcMain.handle('settings:restartApi', async () => {
 });
 
 ipcMain.handle('settings:isConfigured', () => {
-  return !!store.get('supabaseUrl') && !!store.get('supabaseKey') && !!store.get('jwtSecret') &&
-    (!!store.get('googleApiKey') || !!store.get('openaiApiKey') || !!store.get('anthropicApiKey'));
+  // Only need at least one LLM key — Supabase/JWT are bundled
+  return !!store.get('googleApiKey') || !!store.get('openaiApiKey') || !!store.get('anthropicApiKey');
 });
 
 // App lifecycle
 app.whenReady().then(async () => {
   createSplashWindow();
 
-  const isConfigured = !!store.get('supabaseUrl') && !!store.get('supabaseKey') && !!store.get('jwtSecret');
+  const isConfigured = !!store.get('googleApiKey') || !!store.get('openaiApiKey') || !!store.get('anthropicApiKey');
   let apiStarted = false;
 
   if (isConfigured) {

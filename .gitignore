@@ -32,3 +32,6 @@ Thumbs.db
 
 # Electron build output
 release/
+
+# Backend config (contains secrets, bundled into Electron but not pushed to git)
+backend.config.json

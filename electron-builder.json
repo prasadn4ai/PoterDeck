@@ -11,6 +11,10 @@
   ],
   "extraResources": [
     {
+      "from": "backend.config.json",
+      "to": "backend.config.json"
+    },
+    {
       "from": "client/dist",
       "to": "client/dist"
     },
